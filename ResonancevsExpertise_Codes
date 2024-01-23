@@ -1,0 +1,593 @@
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+from IPython.display import display, HTML
+
+# Importing File
+file_path = 'C:\\Users\\souri\\Dropbox\\California State University - Stanislaus\\Resonance vs Expertise - Experiment Data\\Fall 2023\\Fall2023_Experiments.xlsx'
+df = pd.read_excel(file_path)
+
+# Filtering data for the "NoAdvice" condition
+no_advice_df= df[df['Condition'] == 'NoAdvice']
+# Selecting the specified columns for "No Advice" condition
+variables_1= no_advice_df[['C', 'US', 'AllocationChanged']]
+
+# Computing summary statistics for the selected columns
+no_advice_df_summary_stats = variables_1.describe().round(2)
+
+# Converting the summary statistics to a string
+#summary_stats_string = no_advice_df_summary_stats.to_string()
+
+# Writing the summary statistics to a .txt file
+#output_file_path = r'C:\Users\souri\Dropbox\PC (3)\Downloads\summary_statistics.txt'
+#with open(output_file_path, 'w') as file:
+    #file.write(summary_stats_string)
+
+#print(f"Summary statistics written to {output_file_path}")
+
+print(no_advice_df_summary_stats)
+
+
+#print(no_advice_df_summary_stats)
+
+
+# Filtering data for the "Ph1Advice" condition
+ph1_advice_df = df[df['Condition'] == 'Ph1Advice']
+# Selecting the specified columns for "Phase 1" Condition
+variables_2= ph1_advice_df[['C', 'US', 'AllocationChanged']]
+
+# Computing summary statistics for the selected columns
+ph1_advice_df_summary_stats = variables_2.describe().round(2)
+print(ph1_advice_df_summary_stats)
+
+#Creating copy of ph1_advice_df for just Phase 1 analysis later
+ph1_advice_df_copy = df[df['Condition'] == 'Ph1Advice'].copy()
+
+#Filtering data for no_advice_df for just rounds 1-15
+no_advice_df_1_15 = no_advice_df[(no_advice_df['Condition'] == 'NoAdvice') & (no_advice_df['Y'] <= 15)]
+# Selecting the specified columns for "No Advice" Condition Rounds (1-15)
+variables_3= no_advice_df_1_15[['C', 'US', 'AllocationChanged']]
+# Computing summary statistics for the selected columns
+no_advice_df_1_15_summary_stats = variables_3.describe().round(2)
+print(no_advice_df_1_15_summary_stats)
+
+
+
+#Filtering data for no_advice_df for just rounds 16-30
+no_advice_df_16_30 = no_advice_df[(no_advice_df['Condition'] == 'NoAdvice') & (no_advice_df['Y'] > 15)]
+# Selecting the specified columns for "No Advice" Condition Rounds (16-30)
+variables_4= no_advice_df_16_30[['C', 'US', 'AllocationChanged']]
+# Computing summary statistics for the selected columns
+no_advice_df_16_30_summary_stats = variables_4.describe().round(2)
+print(no_advice_df_16_30_summary_stats)
+
+#Filtering data for ph1_advice_df for just rounds 1-15
+ph1_advice_df_1_15 = ph1_advice_df[(ph1_advice_df['Condition'] == 'Ph1Advice') & (ph1_advice_df['Y'] <= 15)]
+# Selecting the specified columns for "Phase 1" Condition Rounds (1-15)
+variables_5= ph1_advice_df_1_15[['C', 'US', 'AllocationChanged']]
+# Computing summary statistics for the selected columns
+ph1_advice_df_1_15_summary_stats = variables_5.describe().round(2)
+print(ph1_advice_df_1_15_summary_stats)
+
+
+
+#Filtering data for ph1_advice_df for just rounds 16-30
+ph1_advice_df_16_30 = ph1_advice_df[(ph1_advice_df['Condition'] == 'Ph1Advice') & (ph1_advice_df['Y'] > 15)]
+# Selecting the specified columns for "Phase 1" Condition Rounds (1-15)
+variables_6= ph1_advice_df_16_30[['C', 'US', 'AllocationChanged']]
+# Computing summary statistics for the selected columns
+ph1_advice_df_16_30_summary_stats = variables_6.describe().round(2)
+print(ph1_advice_df_16_30_summary_stats)
+
+
+
+
+# Calculating mean trading frequency for rounds 1-15 and 16-30 in each condition, "NoAdvice" and "Ph1Advice" respectively.
+mean_no_advice_1_15 = no_advice_df[no_advice_df['Y'] <= 15]['AllocationChanged'].mean()
+print(f"Mean of No Advice Condition (1-15): {mean_no_advice_1_15}")
+mean_no_advice_16_30 = no_advice_df[no_advice_df['Y'] > 15]['AllocationChanged'].mean()
+print(f"Mean of No Advice Condition (16-30): {mean_no_advice_16_30}")
+mean_ph1_advice_1_15 = ph1_advice_df[ph1_advice_df['Y'] <= 15]['AllocationChanged'].mean()
+print(f"Mean of Phase 1 Advice Condition (1-15): {mean_ph1_advice_1_15}")
+mean_ph1_advice_16_30 = ph1_advice_df[ph1_advice_df['Y'] > 15]['AllocationChanged'].mean()
+print(f"Mean of Phase 1 Advice Condition (16-30): {mean_ph1_advice_16_30}")
+mean_no_advice = no_advice_df['AllocationChanged'].mean()
+print(f"Mean of No Advice Condition (All Rounds): {mean_no_advice}")
+mean_ph1_advice = ph1_advice_df['AllocationChanged'].mean()
+print(f"Mean of Phase 1 Condition (All Rounds): {mean_ph1_advice}")
+
+
+#Prepare mean trading frequencies:
+mean_data_showall = {
+    'Control (1-15)': mean_no_advice_1_15,
+    'Control (16-30)': mean_no_advice_16_30,
+    'Treatment (1-15)': mean_ph1_advice_1_15,
+    'Treatment (16-30)': mean_ph1_advice_16_30,
+}
+# Colors for the bars (blue for the first two, green for the last two)
+colors_1 = ['blue', 'brown', 'violet', 'pink']
+
+#Enhanced barplot of mean trading frequencies of show ALL:
+plt.figure(figsize=(10, 6))
+barplot = sns.barplot(x=list(mean_data_showall.keys()), y=list(mean_data_showall.values()), palette=colors_1)
+
+# Adding annotations to each bar
+for p in barplot.patches:
+    barplot.annotate(format(p.get_height(), '.2f'),
+                     (p.get_x() + p.get_width() / 2., p.get_height()),
+                     ha = 'center', va = 'center',
+                     xytext = (0, 9),
+                     textcoords = 'offset points', fontsize=14)
+# Set the fontsize for the bar labels (xticks)
+barplot.set_xticklabels(barplot.get_xticklabels(), fontsize=16)
+
+plt.title('', fontsize=16, fontweight='bold')
+plt.ylabel('Mean Trading Frequency', fontsize=16, fontweight='bold')
+plt.xlabel('Condition', fontsize=16, fontweight='bold')
+
+plt.show()
+
+# Calculating variance trading frequency for rounds 1-15 and 16-30 in each condition, "NoAdvice" and "Ph1Advice" respectively.
+var_no_advice_1_15 = no_advice_df[no_advice_df['Y'] <= 15]['AllocationChanged'].var()
+var_no_advice_16_30 = no_advice_df[no_advice_df['Y'] > 15]['AllocationChanged'].var()
+print(f"Variance of No Advice Condition (16-30): {var_no_advice_16_30}")
+var_ph1_advice_1_15 = ph1_advice_df[ph1_advice_df['Y'] <= 15]['AllocationChanged'].var()
+print(f"Variance of Phase 1 Advice Condition (1-15): {var_ph1_advice_1_15}")
+var_ph1_advice_16_30 = ph1_advice_df[ph1_advice_df['Y'] > 15]['AllocationChanged'].var()
+print(f"Variance of Phase 1 Advice Condition (16-30): {var_ph1_advice_16_30}")
+
+#Calculating variance of trading frequency for "No Advice" and "Phase 1" Conditions respectively:
+var_no_advice = no_advice_df['AllocationChanged'].var()
+print(f"Variance of No Advice Condition (All Rounds): {var_no_advice}")
+var_ph1_advice = ph1_advice_df['AllocationChanged'].var()
+print(f"Variance of Phase 1 Condition (All Rounds): {var_ph1_advice}")
+
+#Preparing variance in trading frequencies of ALL:
+var_data_showall = {
+    'Control (1-15)': var_no_advice_1_15,
+    'Control (16-30)': var_no_advice_16_30,
+    'Treatment(1-15)': var_ph1_advice_1_15,
+    'Treatment (16-30)': var_ph1_advice_16_30,
+}
+
+#Enhanced barplot of variance in trading frequencies of show ALL:
+plt.figure(figsize=(10, 6))
+barplot = sns.barplot(x=list(var_data_showall.keys()), y=list(var_data_showall.values()), palette=colors)
+
+# Adding annotations to each bar
+for p in barplot.patches:
+    barplot.annotate(format(p.get_height(), '.2f'),
+                     (p.get_x() + p.get_width() / 2., p.get_height()),
+                     ha = 'center', va = 'center',
+                     xytext = (0, 9),
+                     textcoords = 'offset points', fontsize=14)
+# Set the fontsize for the bar labels (xticks)
+barplot.set_xticklabels(barplot.get_xticklabels(), fontsize=16)
+
+plt.title('Comparison of Variance in Trading Frequencies', fontsize=16, fontweight='bold')
+plt.ylabel('Variance in Trading Frequency', fontsize=16, fontweight='bold')
+plt.xlabel('Condition', fontsize=16, fontweight='bold')
+plt.show()
+
+
+
+
+
+
+
+
+
+#Calculating Standard Deviation of "No Advice" Condition:
+std_no_advice = no_advice_df['AllocationChanged'].std()
+print(f"Standard Deviation of No Advice Condition (All Rounds): {std_no_advice}")
+#Calculating Standard Deviation of "Phase 1 (ph1advice) Condition:
+std_ph1_advice = ph1_advice_df['AllocationChanged'].std()
+print(f"Standard Deviation of Phase 1 Condition (All Rounds): {std_ph1_advice}")
+
+#Calculating differences in mean trading frequencies in both conditions
+difference_1 = mean_no_advice_16_30 - mean_no_advice_1_15
+difference_2 = mean_ph1_advice_16_30 - mean_ph1_advice_1_15
+
+#Calculating difference-in-differences between the mean trading frequencies
+DiD = difference_2 - difference_1
+
+#print(DiD)
+# #Calculating Sample standard deviations and sample sizes for each group and period
+std_no_advice_1_15 = no_advice_df[no_advice_df['Y'] <= 15]['US'].std()
+n_no_advice_1_15 = no_advice_df[no_advice_df['Y'] <= 15]['AllocationChanged'].count()
+#
+std_no_advice_16_30 = no_advice_df[no_advice_df['Y'] > 15]['US'].std()
+n_no_advice_16_30 = no_advice_df[no_advice_df['Y'] > 15]['AllocationChanged'].count()
+#
+std_ph1_advice_1_15 = ph1_advice_df[ph1_advice_df['Y'] <= 15]['US'].std()
+n_ph1_advice_1_15 = ph1_advice_df[ph1_advice_df['Y'] <= 15]['AllocationChanged'].count()
+#
+std_ph1_advice_16_30 = ph1_advice_df[ph1_advice_df['Y'] > 15]['US'].std()
+n_ph1_advice_16_30 = ph1_advice_df[ph1_advice_df['Y'] > 15]['AllocationChanged'].count()
+
+
+
+print(std_no_advice_1_15)
+print(std_no_advice_16_30)
+print(std_ph1_advice_1_15)
+print(std_ph1_advice_16_30)
+
+diff_std_1_15 = std_no_advice_1_15 - std_ph1_advice_1_15
+print(diff_std_1_15)
+diff_std_16_30 = std_no_advice_16_30 - std_ph1_advice_16_30
+print(diff_std_16_30)
+# # Calculating the standard errors for each mean
+se_no_advice_1_15 = std_no_advice_1_15 / np.sqrt(n_no_advice_1_15)
+se_no_advice_16_30 = std_no_advice_16_30 / np.sqrt(n_no_advice_16_30)
+se_ph1_advice_1_15 = std_ph1_advice_1_15 / np.sqrt(n_ph1_advice_1_15)
+se_ph1_advice_16_30 = std_ph1_advice_16_30 / np.sqrt(n_ph1_advice_16_30)
+
+import statsmodels.formula.api as smf
+
+
+###########Preparing dataset for Logistic Regression by creating additional 'Treatment' and 'PostTreatment" variables##########
+# Creating binary indicators for Treatment and Round
+#Note: The variable "Treatment" is a binary variable. It is equal to 0 if "NoAdvice" condition and 1 if "Ph1Advice" condition
+#Note: The variable "PostTreatment" is a binary variable. It is equal to 0 if "1-15" rounds and 1 if "16-30" rounds
+df['Treatment'] = np.where(df['Condition'] == 'Ph1Advice', 1, 0)
+df['PostTreatment'] = np.where(df['Y'] > 15, 1, 0)
+
+# Creating Interaction term for DiD analysis
+#Note: The variable "TreatmentXPost" is 1 iff both "Ph1Advice" and "16-30" rounds is TRUE.
+df['TreatmentXPost'] = df['Treatment'] * df['PostTreatment']
+
+# Implementing the Logistic regression model
+model_1 = smf.logit('AllocationChanged ~ Subj + Treatment + PostTreatment + TreatmentXPost', data=df).fit()
+
+# Displaying the summary of the model
+print(f"Summary of Model 1:{model_1.summary()}")
+
+#Specifying Path to Export filtered_df to Excel Spreadsheet
+excel_filename = r"C:\Users\souri\Dropbox\PC (3)\Downloads\Fall23Experiments_FullData.xlsx"
+
+# Exporting file with the generated "Treatment", "Post-Treatment" and "TreatmentXPost-Treatment" variables to Excel
+df.to_excel(excel_filename, index=False)
+
+#############################################Bootstrapped DiD###############################
+
+# Defining a function to calculate DiD
+def calculate_did(data):
+    no_advice_pre = data[(data['Condition'] == 'NoAdvice') & (data['Y'] <= 15)]['AllocationChanged']
+    no_advice_post = data[(data['Condition'] == 'NoAdvice') & (data['Y'] > 15)]['AllocationChanged']
+    ph1_advice_pre = data[(data['Condition'] == 'Ph1Advice') & (data['Y'] <= 15)]['AllocationChanged']
+    ph1_advice_post = data[(data['Condition'] == 'Ph1Advice') & (data['Y'] > 15)]['AllocationChanged']
+    diff1 = no_advice_post.mean() - no_advice_pre.mean()
+    diff2 = ph1_advice_post.mean() - ph1_advice_pre.mean()
+    return diff2 - diff1
+# Calculating the observed DiD
+observed_did = calculate_did(df)
+
+# Bootstrapping the DiD
+n_iterations = 10000
+bootstrap_dids = []
+for _ in range(n_iterations):
+    # Create a bootstrap sample with replacement
+    bootstrap_sample = df.sample(n=len(df), replace=True)
+    bootstrap_did = calculate_did(bootstrap_sample)
+    bootstrap_dids.append(bootstrap_did)
+
+# Calculating the 95% confidence interval
+lower_bound = np.percentile(bootstrap_dids, 2.5)
+upper_bound = np.percentile(bootstrap_dids, 97.5)
+
+# Calculating p-value
+p_value = np.mean([did > observed_did for did in bootstrap_dids])
+
+#print(f"Observed DiD: {observed_did}")
+#print(f"95% Confidence Interval: ({lower_bound}, {upper_bound})")
+#print(f"P-value: {p_value}")
+
+###########################Testing Effectiveness of Advice For Only Phase 1 Condition Sample####################
+from scipy.stats import wilcoxon
+
+# Extracting trading frequencies for pre-advice and post-advice
+pre_advice_trading = ph1_advice_df[ph1_advice_df['Y'] <= 15]['AllocationChanged']
+post_advice_trading = ph1_advice_df[ph1_advice_df['Y'] > 15]['AllocationChanged']
+# Running Wilcoxon Signed-Rank Test
+stat, p = wilcoxon(pre_advice_trading, post_advice_trading)
+#print(f"Wilcoxon test statistic: {stat}, p-value: {p}")
+
+##########Logistic Regression for just within subject design################################
+ph1_advice_df_copy['Treatment_1'] = np.where(ph1_advice_df_copy['Y'] > 15, 1, 0)
+# Implementing the Logistic regression model
+model_2 = smf.logit('AllocationChanged ~ Subj + Treatment_1', data=ph1_advice_df_copy).fit()
+# Displaying the summary of the model
+print(f"Summary of Model 2:{model_2.summary()}")
+
+
+#Specifying Path to Export ph1_advice_df to Excel Spreadsheet
+#excel_filename_1 = r"C:\Users\souri\Dropbox\PC (3)\Downloads\Ph1Advice_Only.xlsx"
+
+# Exporting file with the generated with only Phase 1 Advice to Excel
+#ph1_advice_df_copy.to_excel(excel_filename_1, index=False)
+
+###Computing Trading Costs Per Condition#########
+mean_trading_costs_no_advice_1_15=abs(no_advice_df_1_15['Trading Costs'].mean()).round(2)
+mean_trading_costs_no_advice_16_30=abs(no_advice_df_16_30['Trading Costs'].mean()).round(2)
+mean_trading_costs_ph1_advice_df_1_15=abs(ph1_advice_df_1_15['Trading Costs'].mean()).round(2)
+mean_trading_costs_ph1_advice_df_16_30=abs(ph1_advice_df_16_30['Trading Costs'].mean()).round(2)
+
+print(f"Tradings Costs Incurred (No Advice; Rounds 1-15:) {mean_trading_costs_no_advice_1_15}")
+print(f"Tradings Costs Incurred (No Advice; Rounds 16-30:) {mean_trading_costs_no_advice_16_30}")
+print(f"Tradings Costs Incurred (Phase 1; Rounds 1-15:) {mean_trading_costs_ph1_advice_df_1_15}")
+print(f"Tradings Costs Incurred (Phase 1; Rounds 16-30:) {mean_trading_costs_ph1_advice_df_16_30}")
+
+abs_mean_trading_costs_ALL = {
+    'Control (1-15)': mean_trading_costs_no_advice_1_15,
+    'Control (16-30)': mean_trading_costs_no_advice_16_30,
+    'Treatment (1-15)': mean_trading_costs_ph1_advice_df_1_15,
+    'Treatment (16-30)': mean_trading_costs_ph1_advice_df_16_30,
+}
+
+
+# Colors for the bars (blue for the first, green for second)
+colors = ['red', 'green', 'brown', 'pink']
+
+#Enhanced barplot of mean trading costs incurred:
+plt.figure(figsize=(10, 6))
+barplot = sns.barplot(x=list(abs_mean_trading_costs_ALL.keys()), y=list(abs_mean_trading_costs_ALL.values()), palette=colors)
+
+# Adding annotations to each bar
+for p in barplot.patches:
+    barplot.annotate(format(p.get_height(), '.2f'),
+                     (p.get_x() + p.get_width() / 2., p.get_height()),
+                     ha = 'center', va = 'center',
+                     xytext = (0, 9),
+                     textcoords = 'offset points', fontsize=14)
+# Set the fontsize for the bar labels (xticks)
+barplot.set_xticklabels(barplot.get_xticklabels(), fontsize=16)
+
+plt.title('', fontsize=16, fontweight='bold')
+plt.ylabel('Mean Trading Costs Incurred', fontsize=16, fontweight='bold')
+plt.xlabel('Condition', fontsize=16, fontweight='bold')
+
+plt.show()
+
+#########################################################################
+import pandas as pd
+import numpy as np
+# Folder path (**NOTE: CHANGE FOLDER PATH ACCORDING TO THE LOCATION OF EXCEL FILES ON YOUR COMPUTER)
+folder_path = r"C:\Users\souri\Dropbox\California State University - Stanislaus\Resonance vs Expertise - Experiment Data\AshMatt Adv"
+
+# Generating file paths for files named "AshAdv- Copy(1001) - Copy.xlsm" to "AshAfv - Copy(1023) - Copy.xlsm"
+# (**NOTE: CHANGE FOLDER PATH ACCORDING TO THE LOCATION OF EXCEL FILES ON YOUR COMPUTER)
+file_paths = [f"{folder_path}\\AshAdv - Copy ({i}) - Copy.xlsm" for i in range(1001, 1024)]
+
+# Listing to hold each DataFrame
+    dfs = []
+
+    # Looping through the file paths, read the "Subdata" sheet, and append to the list
+    for file_path in file_paths:
+        temp_df = pd.read_excel(file_path, sheet_name='SubData')
+        dfs.append(temp_df)
+
+# Concatenating all DataFrames into one
+concatenated_df = pd.concat(dfs, ignore_index=True)
+
+# Converting 'Y' column to numeric
+concatenated_df['Y'] = pd.to_numeric(concatenated_df['Y'], errors='coerce')
+
+# Filtering the DataFrame and explicitly create a copy to avoid "SettingWithCopyWarning"
+filtered_df = concatenated_df[concatenated_df['Y'] <= 30].copy()
+
+# Creating a new column 'AllocationChanged' on whether the participants changed their allocations indicated by variable "Trading Costs"
+# 'AllocationChanged' is 0 if "Trading Costs" is 0 or NaN, and 1 otherwise
+filtered_df['AllocationChanged'] = np.where((filtered_df['Trading Costs'] == 0) | (pd.isna(filtered_df['Trading Costs'])), 0, 1)
+
+# Specify Path to Export filtered_df to Excel Spreadsheet
+excel_filename = r"C:\Users\souri\Dropbox\California State University - Stanislaus\Resonance vs Expertise - Experiment Data\Fall 2023\Master_AshAdv.xlsx"
+
+# Export to Excel
+filtered_df.to_excel(excel_filename, index=False)
+
+#############################################################################################################
+import pandas as pd
+import numpy as np
+# Folder path (**NOTE: CHANGE FOLDER PATH ACCORDING TO THE LOCATION OF EXCEL FILES ON YOUR COMPUTER)
+folder_path_1 = r"C:\Users\souri\Dropbox\California State University - Stanislaus\Resonance vs Expertise - Experiment Data\AshMatt Adv"
+
+# Listing to hold each DataFrame
+    dfs_1 = []
+
+for i in range(2001, 2026):
+    if i != 2004:
+        file_path_1 = f"{folder_path_1}\\MattAdv - Copy ({i}) - Copy.xlsm"
+        temp_df_1 = pd.read_excel(file_path_1, sheet_name='SubData')
+        dfs_1.append(temp_df_1)
+
+# Concatenating all DataFrames into one
+concatenated_df_1 = pd.concat(dfs_1, ignore_index=True)
+
+# Converting 'Y' column to numeric
+concatenated_df_1['Y'] = pd.to_numeric(concatenated_df_1['Y'], errors='coerce')
+
+# Filtering the DataFrame and explicitly create a copy to avoid "SettingWithCopyWarning"
+filtered_df_1 = concatenated_df_1[concatenated_df_1['Y'] <= 30].copy()
+
+# Creating a new column 'AllocationChanged' on whether the participants changed their allocations indicated by variable "Trading Costs"
+# 'AllocationChanged' is 0 if "Trading Costs" is 0 or NaN, and 1 otherwise
+filtered_df_1['AllocationChanged'] = np.where((filtered_df_1['Trading Costs'] == 0) | (pd.isna(filtered_df_1['Trading Costs'])), 0, 1)
+
+# Specify Path to Export filtered_df_1 to Excel Spreadsheet
+excel_filename_1 = r"C:\Users\souri\Dropbox\California State University - Stanislaus\Resonance vs Expertise - Experiment Data\Fall 2023\Master_MattAdv.xlsx"
+
+# Export to Excel
+filtered_df_1.to_excel(excel_filename_1, index=False)
+
+#######################################################################################################
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+#####CONCATENATING "AshAdv" CONDITION DATASET WITH "MattAdv" CONDITION
+#Reading the "Master_AshAdv" file:
+ashadv_df = pd.read_excel(r"C:\Users\souri\Dropbox\California State University - Stanislaus\Resonance vs Expertise - Experiment Data\Fall 2023\Master_AshAdv.xlsx")
+
+#Reading the "Master_MattAdv" file:
+mattadv_df = pd.read_excel(r"C:\Users\souri\Dropbox\California State University - Stanislaus\Resonance vs Expertise - Experiment Data\Fall 2023\Master_MattAdv.xlsx")
+
+# Concatenating the DataFrames
+concatenated_df_2 = pd.concat([ashadv_df, mattadv_df], ignore_index=True)
+
+# Specify Path to Export concatenated_df_2 to Excel Spreadsheet
+#excel_filename_2 = r"C:\Users\souri\Dropbox\California State University - Stanislaus\Resonance vs Expertise - Experiment Data\Fall 2023\AshMatt_Adv.xlsx"
+
+# Export to Excel
+#concatenated_df_2.to_excel(excel_filename_2, index=False)
+
+#Computing the mean of trading frequency (using the binary variable "AllocationChanged") in "ashadv_df"
+mean_trading_frequency_ashadv = ashadv_df['AllocationChanged'].mean()
+
+#Computing the mean of trading frequency (using the binary variable "AllocationChanged") in "mattadv_df"
+mean_trading_frequency_mattadv = mattadv_df['AllocationChanged'].mean()
+
+#Print mean_trading_frequencies
+print(f"Mean Trading Frequency (Female Advisor): {mean_trading_frequency_ashadv}")
+print(f"Mean Trading Frequency (Male Advisor): {mean_trading_frequency_mattadv}")
+
+#Computing the std of trading frequency (using the binary variable "AllocationChanged") in "ashadv_df"
+std_trading_frequency_ashadv = ashadv_df['AllocationChanged'].std()
+
+#Computing the std of trading frequency (using the binary variable "AllocationChanged") in "mattadv_df"
+std_trading_frequency_mattadv = mattadv_df['AllocationChanged'].std()
+
+#Print std_trading_frequencies
+print(f"STD of Trading Frequency (Female Advisor): {std_trading_frequency_ashadv}")
+print(f"STD of Trading Frequency (Male Advisor): {std_trading_frequency_mattadv}")
+
+#Computing the variance of trading frequency (using the binary variable "AllocationChanged") in "ashadv_df"
+var_trading_frequency_ashadv = ashadv_df['AllocationChanged'].var()
+
+#Computing the variance of trading frequency (using the binary variable "AllocationChanged") in "mattadv_df"
+var_trading_frequency_mattadv = mattadv_df['AllocationChanged'].var()
+
+#Print var_trading_frequencies
+print(f"Variance of Trading Frequency (Female Advisor): {var_trading_frequency_ashadv}")
+print(f"Variance of Trading Frequency (Male Advisor): {var_trading_frequency_mattadv}")
+
+#PLOT MEAN TRADING FREQUENCIES
+mean_data_ashmatt = {
+    'Female Advisor (Ashley)': mean_trading_frequency_ashadv,
+    'Male Advisor (Matthew)': mean_trading_frequency_mattadv,
+}
+# Colors for the bars (blue for the first, green for second)
+colors = ['pink', 'blue']
+
+#Enhanced barplot of mean trading frequencies of show ALL:
+plt.figure(figsize=(10, 6))
+barplot = sns.barplot(x=list(mean_data_ashmatt.keys()), y=list(mean_data_ashmatt.values()), palette=colors)
+
+# Adding annotations to each bar
+for p in barplot.patches:
+    barplot.annotate(format(p.get_height(), '.2f'),
+                     (p.get_x() + p.get_width() / 2., p.get_height()),
+                     ha = 'center', va = 'center',
+                     xytext = (0, 9),
+                     textcoords = 'offset points', fontsize=14)
+# Set the fontsize for the bar labels (xticks)
+barplot.set_xticklabels(barplot.get_xticklabels(), fontsize=14)
+plt.title('', fontsize=16, fontweight='bold')
+plt.ylabel('Mean Trading Frequency', fontsize=16, fontweight='bold')
+plt.xlabel('Condition', fontsize=16, fontweight='bold')
+
+plt.show()
+"""
+#PLOT VARIANCE IN TRADING FREQUENCIES
+var_data_ashmatt = {
+    'Female Advisor (Ashley)': var_trading_frequency_ashadv,
+    'Male Advisor (Matthew)': var_trading_frequency_mattadv,
+}
+# Colors for the bars (blue for the first, green for second)
+colors = ['brown', 'pink']
+
+#Enhanced barplot of vasriance trading frequencies of show ALL:
+plt.figure(figsize=(10, 6))
+barplot = sns.barplot(x=list(var_data_ashmatt.keys()), y=list(var_data_ashmatt.values()), palette=colors)
+
+# Adding annotations to each bar
+for p in barplot.patches:
+    barplot.annotate(format(p.get_height(), '.2f'),
+                     (p.get_x() + p.get_width() / 2., p.get_height()),
+                     ha = 'center', va = 'center',
+                     xytext = (0, 9),
+                     textcoords = 'offset points', fontsize=14)
+# Set the fontsize for the bar labels (xticks)
+barplot.set_xticklabels(barplot.get_xticklabels(), fontsize=16)
+plt.title('Comparison of Variance in Trading Frequencies', fontsize=16, fontweight='bold')
+plt.ylabel('Variance of Trading Frequency', fontsize=16, fontweight='bold')
+plt.xlabel('Condition', fontsize=16, fontweight='bold')
+
+plt.show()
+"""
+########################################################################################################
+#TRADING COSTS INCURRED:
+# Calculate the absolute mean trading costs
+abs_mean_trading_costs_ashadv = abs(ashadv_df['Trading Costs'].mean())
+abs_mean_trading_costs_mattadv = abs(mattadv_df['Trading Costs'].mean())
+
+# Print the absolute mean trading costs
+print(f"Trading Costs Incurred (Female Advisor): {abs_mean_trading_costs_ashadv}")
+print(f"Trading Costs Incurred (Male Advisor): {abs_mean_trading_costs_mattadv}")
+
+# Create a dictionary for absolute mean trading costs
+abs_mean_trading_costs_ashmatt = {
+    'Female Advisor (Ashley)': abs_mean_trading_costs_ashadv,
+    'Male Advisor (Matthew)': abs_mean_trading_costs_mattadv,
+}
+
+
+# Colors for the bars (blue for the first, green for second)
+colors = ['pink', 'blue']
+
+#Enhanced barplot of mean trading costs incurred:
+plt.figure(figsize=(10, 6))
+barplot = sns.barplot(x=list(abs_mean_trading_costs_ashmatt.keys()), y=list(abs_mean_trading_costs_ashmatt.values()), palette=colors)
+
+# Adding annotations to each bar
+for p in barplot.patches:
+    barplot.annotate(format(p.get_height(), '.2f'),
+                     (p.get_x() + p.get_width() / 2., p.get_height()),
+                     ha = 'center', va = 'center',
+                     xytext = (0, 9),
+                     textcoords = 'offset points', fontsize=12)
+# Set the fontsize for the bar labels (xticks)
+barplot.set_xticklabels(barplot.get_xticklabels(), fontsize=16)
+plt.title('', fontsize=16, fontweight='bold')
+plt.ylabel('Mean Trading Costs Incurred', fontsize=16, fontweight='bold')
+plt.xlabel('Condition', fontsize=16, fontweight='bold')
+
+plt.show()
+
+# Selecting the specified columns for "AshAdv" condition summary statistics
+variables_ashadv= ashadv_df[['C', 'US', 'AllocationChanged', 'Trading Costs']]
+
+# Selecting the specified columns for "MattAdv" condition summary statistics
+variables_mattadv= mattadv_df[['C', 'US', 'AllocationChanged', 'Trading Costs']]
+
+#Computing summary statistics for "AshAdv" condition
+ashadv_df_summary_stats = variables_ashadv.describe().round(2)
+
+##Computing summary statistics for "MattAdv" condition
+mattadv_df_summary_stats = variables_mattadv.describe().round(2)
+
+#print(f"Summary Statistics of 'Female Advisor' Condition: {ashadv_df_summary_stats}")
+#print(f"Summary Statistics of 'Male Advisor' Condition: {mattadv_df_summary_stats}")
+print(ashadv_df_summary_stats)
+print(mattadv_df_summary_stats)
+####Pooled mean and standard deviation####
+
+#Selecting the specified columns for "Pooled" condition summary statistics
+variables_ashmattadv= concatenated_df_2[['C', 'US', 'AllocationChanged', 'Trading Costs']]
+
+#Computing summary statistics for "Pooled" condition
+ashmattadv_summary_stats = variables_ashmattadv.describe().round(2)
+
+print(ashmattadv_summary_stats)
+
+
