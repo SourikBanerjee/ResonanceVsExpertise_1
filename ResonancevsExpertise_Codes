@@ -70,8 +70,6 @@ variables_5= ph1_advice_df_1_15[['C', 'US', 'AllocationChanged']]
 ph1_advice_df_1_15_summary_stats = variables_5.describe().round(2)
 print(ph1_advice_df_1_15_summary_stats)
 
-
-
 #Filtering data for ph1_advice_df for just rounds 16-30
 ph1_advice_df_16_30 = ph1_advice_df[(ph1_advice_df['Condition'] == 'Ph1Advice') & (ph1_advice_df['Y'] > 15)]
 # Selecting the specified columns for "Phase 1" Condition Rounds (1-15)
@@ -79,9 +77,6 @@ variables_6= ph1_advice_df_16_30[['C', 'US', 'AllocationChanged']]
 # Computing summary statistics for the selected columns
 ph1_advice_df_16_30_summary_stats = variables_6.describe().round(2)
 print(ph1_advice_df_16_30_summary_stats)
-
-
-
 
 # Calculating mean trading frequency for rounds 1-15 and 16-30 in each condition, "NoAdvice" and "Ph1Advice" respectively.
 mean_no_advice_1_15 = no_advice_df[no_advice_df['Y'] <= 15]['AllocationChanged'].mean()
